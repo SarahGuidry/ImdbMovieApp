@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import DeleteMovieModal from './DeleteMovieModal'
 
+
 const Movie = (props) => {
     const { addToFavorites } = props;
 
@@ -24,29 +25,24 @@ const Movie = (props) => {
             })
     }, [id]);
 
-    const toggleShowModal = () => {
-        console.log('toggling showModal', showModal)
-        setShowModal(!showModal)
-    }
 
-    const showModalToDelete = () => {
-        toggleShowModal()
-        return (<DeleteMovieModal setConfirmDelete={props.setConfirmDelete} />)
-    }
-
-    const onDelete = e => {
+    const onDelete = (e, id) => {
         e.preventDefault();
-        //    toggleShowModal();
-        props.confirmDelete ? console.log('delete confirmed') : console.log('delete cancelled')
-        props.confirmDelete ?
-            axios.delete(`http://localhost:5000/api/movies/${id}`)
-                .then(res => {
-                    props.deleteMovie(res.data)
-                    console.log(res.data)
-                })
-                .catch(err => console.log(err.response))
-            : push(`/movie/${id}`)
+        setShowModal(true)
+        console.log('onDelete function called, <Movie>')
+        deleteFromServer(id)
+        startAxiosCall();
     }
+
+    const startAxiosCall = () => {
+        console.log('startAxiosCall funciton called. <Movie> confirmDelete: ', props.confirmDelete)
+        props.confirmDelete ? console.log('delete confirmed') : console.log('delete cancelled')
+        if (confirmDelete) {
+            deleteFromServer()
+        }
+    }
+
+
 
     return (<div className="modal-page col">
         <div className="modal-dialog">
@@ -79,14 +75,14 @@ const Movie = (props) => {
                         <section>
                             <span className="m-2 btn btn-dark">Favorite</span>
                             <Link to={`/movies/edit/${movie.id}`} className="m-2 btn btn-success">Edit</Link>
-                            <span className="delete"><input type="button" className="m-2 btn btn-danger" onClick={onDelete} value="Delete" /></span>
+                            <span className="delete"><Link to={`/confirm/${movie.id}`}><input type="button" className="m-2 btn btn-danger" value="Delete" /></Link></span>
                         </section>
                     </div>
                 </div>
             </div>
         </div>
-        {showModal && <DeleteMovieModal showModal={showModal} setConfirmDelete={props.setConfirmDelete} />}
-    </div>);
+        { showModal && <DeleteMovieModal id={id} deleteMovie={props.deleteMovie} showModal={showModal} setConfirmDelete={props.setConfirmDelete} />}
+    </div >);
 }
 
 export default Movie;

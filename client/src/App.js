@@ -29,7 +29,6 @@ const App = (props) => {
 
   const deleteMovie = (id) => {
     const editedList = movies.filter(movie => movie.id !== id);
-
     confirmDelete ? setMovies(editedList) : setMovies(movies)
     push('/movies')
   }
@@ -56,13 +55,23 @@ const App = (props) => {
                 return (<EditMovieForm {...props} setMovies={setMovies} />)
               }} />
 
-            <Route exact path="/movies/:id">
-              <Movie deleteMovie={deleteMovie} setConfirmDelete={setConfirmDelete} />
-            </Route>
+            <Route
+              exact path="/movies/:id"
+              render={(props) => {
+                return (<Movie {...props} deleteMovie={deleteMovie} setConfirmDelete={setConfirmDelete} />)
+              }}
+            />
 
+            <Route
+              exact path='/confirm/:id'
+              render={(props) => {
+                return (<DeleteMovieModal {...props} confirmDelete={confirmDelete} deleteMovie={deleteMovie} setConfirmDelete={setConfirmDelete} setMovies={setMovies} />)
+              }}
+            />
+            <Route
+              exact path="/movies"
+              render={props => <MovieList {...props} setMovies={setMovies} movies={movies} />} />
 
-            <Route exact path="/movies" render={props => <MovieList {...props} setMovies={setMovies} movies={movies} />}>
-            </Route>
 
             <Route exact path='/add'>
               <AddMovieForm setMovies={setMovies} />
@@ -80,3 +89,4 @@ const App = (props) => {
 
 
 export default App;
+

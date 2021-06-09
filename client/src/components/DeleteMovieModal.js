@@ -1,18 +1,24 @@
 import React from 'react';
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
+import { deleteFromServer } from '../apiCalls'
 
 
 const DeleteMovieModal = props => {
     const { id } = useParams()
-    const shouldDelete = id => {
+    const { push } = useHistory()
 
+    const shouldDelete = e => {
+        e.preventDefault()
         props.setConfirmDelete(true);
-        console.log('setting confirmDelete to true', props.confirmDelete)
+        console.log('setting confirmDelete to true <DeleteMovieModal>', props.confirmDelete)
+        deleteFromServer(id)
+        props.deleteMovie(id)
+        push('/movies')
     }
 
     const closeModal = () => {
         props.setConfirmDelete(false)
-        props.showModal(false)
+        push(`/movies/${id}`)
     }
     return (<div id="deleteMovieModal" className='show'>
         <div className="modal-dialog">
@@ -28,7 +34,7 @@ const DeleteMovieModal = props => {
                     </div>
                     <div className="modal-footer">
                         <input type="button" className="btn btn-default" data-dismiss="modal" value="Cancel" onClick={closeModal} />
-                        <input type="submit" className="btn btn-danger" value="Delete" />
+                        <input type="submit" className="btn btn-danger" value="Delete" onClick={shouldDelete} />
                     </div>
                 </form>
             </div>
